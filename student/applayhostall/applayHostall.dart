@@ -19,7 +19,7 @@ class _MyDropdownState extends State<MyDropdown> {
 
   Future<void> _getDropdownItems() async {
     final snapshot = await FirebaseFirestore.instance
-        .collection('roooms')
+        .collection('Rooms')
         .where('vaccency', isNotEqualTo: '0')
         .get();
     final List<String> items =
@@ -44,18 +44,19 @@ class _MyDropdownState extends State<MyDropdown> {
           .set({
         // 'requests': [],
         'roomid': _selectedItem,
-        'timestamp': FieldValue.serverTimestamp(),
       });
-      await FirebaseFirestore.instance
-          .collection('roomRequests')
-          .doc(_selectedItem)
-          .collection('requestes')
-          .doc(DateTime.now().millisecondsSinceEpoch.toString())
-          // DateTime.now().millisecondsSinceEpoch.toString()
-          .set({
-        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-        'requests': [],
-      });
+      // await FirebaseFirestore.instance
+      //     .collection('roomRequests')
+      //     .doc(_selectedItem)
+      //     .collection('requestes')
+      //     .doc(
+      //       "Request for" + _selectedItem,
+      //     )
+      //     // DateTime.now().millisecondsSinceEpoch.toString()
+      //     .set({
+      //   'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+      //   'requests': "",
+      // });
     }
   }
 
@@ -103,17 +104,30 @@ class _MyDropdownState extends State<MyDropdown> {
                   // Scaffold.of(context).showSnackBar(
                   //   SnackBar(content: Text('Data saved')),
                   // );
+                  await FirebaseFirestore.instance
+                      .collection('roomRequests')
+                      .doc(_selectedItem)
+                      .collection('requestes')
+                      .doc(
+                        FirebaseAuth.instance.currentUser!.uid,
+                      )
+                      .set({
+                    'timestamp':
+                        DateTime.now().millisecondsSinceEpoch.toString(),
+                    'requests': FirebaseAuth.instance.currentUser!.uid,
+                  });
 
                   // FirebaseFirestore.instance
                   //     .collection('roomRequests')
                   //     .doc(_selectedItem)
                   //     .collection('requestes')
                   //     .doc(
-                  //       FieldValue.serverTimestamp() as String?,
+                  //       FirebaseAuth.instance.currentUser!.uid,
                   //     )
                   //     .update({
-                  //   'requests': FieldValue.arrayUnion(
-                  //       [FirebaseAuth.instance.currentUser!.uid])
+                  //   'timestamp':
+                  //       DateTime.now().millisecondsSinceEpoch.toString(),
+                  //   'requests': FirebaseAuth.instance.currentUser!.uid
                   // });
                 },
                 child: Text(_selectedItem))
